@@ -485,15 +485,14 @@ class AudioAction:
 ##############################################################
 def test():
     audio_action = AudioAction(track_id_library=1, file_library=1, audio=None)
-    audio_action.load_audio(wave_file="clip2.wav")
+    audio_action.load_audio(wave_file="clip1.wav")
     # audio_action.plot(spectrogram=False, use_original=True, save=False)
     # audio_action.plot(spectrogram=True, use_original=True, save=False)
     audio_action.fade(fade=12, use_original=True)
-    # audio_action.reverse_track(use_original=False)
+    audio_action.reverse_track(use_original=False)
     # audio_action.save_audio(file_name="temp", extension="wav", use_original=False)
     # audio_action.play_audio(use_original=False)
     audio_action.equalizer(equalizer_type="vocal", use_original=False, save=True, play=True, file_name="vocal_equalized.wav")
-
 
     print("Here")
 
