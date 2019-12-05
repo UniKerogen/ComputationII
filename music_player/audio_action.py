@@ -155,7 +155,7 @@ class AudioAction:
     # plot(spectogram, save)
     # Input: True/False
     # Output: Depends
-    def plot(self, spectrogram=False, use_original=False, save=False):
+    def plot(self, spectrogram=False, use_original=True, save=False):
         # Determine audio file
         if use_original:
             audio = self.audio_original
@@ -271,9 +271,12 @@ class AudioAction:
             # Close file
             wg.close()
             if extension.lower() == "mp3":
-                mod_commend = "ffmpeg -i " + save_name + " -acodec pcm_s16le -ar 44100 " + file_name + ".mp3"
+                mod_commend = "ffmpeg -i " + save_name + " -vn -ar 44100 -ac 2 -b:a 192k " + file_name + ".mp3"
                 try:
+                    if os.path.exists(file_name + ".mp3"):
+                        os.remove(file_name + ".mp3")
                     subprocess.call(mod_commend)
+                    os.remove(save_name)
                     print("File Saved")
                 except OSError:
                     print("Error(1014): Unable to use ffmpeg")
@@ -447,6 +450,7 @@ class AudioAction:
                 eq.piano(save=save, play=play, file_name=file_name)
             else:
                 print("Error(1006): Unknown equalizer")
+            print("Process Finished")
             # Save to class variable
             if not audio_mod:
                 self.audio_temp = self.audio_modified

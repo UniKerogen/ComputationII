@@ -294,11 +294,29 @@ def short_test():
     search_track = "Yosemite"
     lib.search(targets=search_track)
     print("*****************************************************")
+    # Audio Manipulation with local .wav file
+    lib.audio_action.load_audio(wave_file="clip1.wav")
+    # Spectrogram
+    lib.audio_action.plot(spectrogram=True, save=False)
+    # Sound Wave
+    lib.audio_action.plot(spectrogram=False, save=False)
+    # Apply Fade
+    lib.audio_action.fade(fade=12, use_original=True)
+    # Reverse Track
+    # lib.audio_action.reverse_track(use_original=False)
+    # Save audio
+    lib.audio_action.save_audio(file_name="org_fade_reverse", extension="wav", use_original=False)
+    lib.audio_action.save_audio(file_name="org_fade_reversed", extension="mp3", use_original=False)
+    # Play audio
+    lib.audio_action.play_audio(use_original=False)
+    # Add Equalizer and play the audio file
+    # NOTICE: Only ONE equalizer can be applied
+    lib.audio_action.equalizer(equalizer_type="vocal", use_original=False, save=True, play=True, file_name="vocal_equalized.wav")
 
 
 # IMPORTANT
 # This is what is is supposed to perform with loading track stored in library
-# But due to some technical issue that it is not implemented
+# But due to some technical issues that it is not implemented
 def test_api():
     print("Testing API")
     # Generate a random playlist of n songs

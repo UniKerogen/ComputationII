@@ -161,6 +161,10 @@ class FilterType:
                                             save_result=False, play=False)
         # Extra Step
         if save_result:
+            if file_name.lower().endswith(".wav"):
+                pass
+            else:
+                file_name = file_name + ".wav"
             # Remove old file
             if os.path.exists(file_name):
                 os.remove(file_name)
@@ -171,6 +175,7 @@ class FilterType:
             wave_file.writeframes(audioop.mul(band_passed, self.audio.getsampwidth(), VOL_MULTI))
             wave_file.close()
         if play:
+            print("  Now Playing Equalized Audio...")
             # Initialize pyaudio
             p = pyaudio.PyAudio()
             # Open Stream
