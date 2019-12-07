@@ -285,6 +285,34 @@ class AudioAction:
         else:
             print("Error(1011): audio not loaded")
 
+    def save_mega(self, audio, file_name, extension, frame):
+        # Check File Name
+        if file_name.lower().endswith(".wav"):
+            pass
+        else:
+            file_name = file_name + ".wav"
+        # Remove old file
+        if os.path.exists(file_name):
+            os.remove(file_name)
+        # Create New File
+        wave_file = wave.open(file_name, "wb")
+        wave_file.setparams((1, 2, 44100, frame, 'NONE', 'not compressed'))
+        wave_file.writeframes(audioop.mul(b''.join(audio), 2, 1.1))
+        wave_file.close()
+        # Determine extension
+        if extension == "mp3":
+            mod_commend = "ffmpeg -i " + file_name + " -vn -ar 44100 -ac 2 -b:a 192k " + file_name.split(".")[0] + ".mp3"
+            try:
+                if os.path.exists(file_name + ".mp3"):
+                    os.remove(file_name + ".mp3")
+                subprocess.call(mod_commend)
+                os.remove(file_name)
+                print("File Saved")
+            except OSError:
+                print("Error(1014): Unable to use ffmpeg")
+        else:
+            pass
+
     # Play audio to speaker from self.audio
     # play_audio()
     # Input: None
@@ -443,16 +471,16 @@ class AudioAction:
             eq = self.Equalizer(audio_original=self.original, mod_audio=audio)
             # Determine the equalizer and apply to audio
             if equalizer_type.lower() == "acoustic":
-                eq.acoustic(save=save, play=play, file_name=file_name)
+                audio_mod = eq.acoustic(save=save, play=play, file_name=file_name)
             elif equalizer_type.lower() == "vocal":
-                eq.vocal(save=save, play=play, file_name=file_name)
+                audio_mod = eq.vocal(save=save, play=play, file_name=file_name)
             elif equalizer_type.lower() == "piano":
-                eq.piano(save=save, play=play, file_name=file_name)
+                audio_mod = eq.piano(save=save, play=play, file_name=file_name)
             else:
                 print("Error(1006): Unknown equalizer")
             print("Process Finished")
             # Save to class variable
-            if not audio_mod:
+            if audio_mod is not None:
                 self.audio_temp = self.audio_modified
                 self.audio_modified = audio_mod
                 # Operation
@@ -460,6 +488,7 @@ class AudioAction:
                 self.last_operation = "EQUALIZER"
         else:
             print("Error(1007): audio not loaded")
+        return audio_mod
 
     # Equalizer Class
     class Equalizer:
@@ -471,17 +500,23 @@ class AudioAction:
         # Apply Acoustic Equalizer
         def acoustic(self, save=False, play=False, file_name="acoustic_filtered.wav"):
             print("Applying Acoustic equalizer")
-            self.filtering.band_pass_filter(low_frequency=500, high_frequency=1000, save_result=save, play=play, file_name=file_name)
+            [audio_mod, n_frame] = self.filtering.band_pass_filter(low_frequency=500, high_frequency=1000,
+                                                                   save_result=save, play=play, file_name=file_name)
+            return [audio_mod, n_frame]
 
         # Apply Vocal Equalizer
         def vocal(self, save=False, play=False, file_name="vocal_filtered.wav"):
             print("Applying Vocal equalizer")
-            self.filtering.band_pass_filter(low_frequency=5000, high_frequency=10000, save_result=save, play=play, file_name=file_name)
+            [audio_mod, n_frame] = self.filtering.band_pass_filter(low_frequency=5000, high_frequency=10000,
+                                                                   save_result=save, play=play, file_name=file_name)
+            return [audio_mod, n_frame]
 
         # Apply Piano Equalizer
         def piano(self, save=False, play=False, file_name="piano_filtered.wav"):
             print("Applying Piano equalizer")
-            self.filtering.band_pass_filter(low_frequency=250, high_frequency=500, save_result=save, play=play, file_name=file_name)
+            [audio_mod, n_frame] = self.filtering.band_pass_filter(low_frequency=250, high_frequency=500,
+                                                                   save_result=save, play=play, file_name=file_name)
+            return [audio_mod, n_frame]
 
 
 ##############################################################

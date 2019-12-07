@@ -190,7 +190,7 @@ class FilterType:
             stream.close()
             p.terminate()
         # Return Result
-        return band_passed
+        return [band_passed, self.n_frames]
 
 
 ##############################################################

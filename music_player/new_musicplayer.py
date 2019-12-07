@@ -260,6 +260,28 @@ class Library:
                                                       extension=extension,
                                                       use_original=True)
 
+    def demo_playlist_to_audio(self, playlist, equalizer_type, file_name, extension):
+        print("This is a demo for playlist to audio")
+        self.mega_audio = []
+        frame_sum = 0
+        if playlist.shape[0] != equalizer_type.shape[0]:
+            print("Unmatched Input for playlist and its individual equalizer")
+        else:
+            for index in range(0, playlist.shape[0]):
+                if os.path.exists("mega_temp.wav"):
+                    os.remove("mega_temp.wav")
+                # Modify and Save track
+                self.audio_action.load_audio(wave_file=playlist[index])
+                self.audio_action.fade(fade=12, use_original=True)
+                [audio_mod, n_frame] = self.audio_action.equalizer(equalizer_type=equalizer_type[index],
+                                                                   use_original=False, save=True,
+                                                                   play=False, file_name="mega_temp.wav")
+                self.mega_audio.append(audio_mod)
+                frame_sum += n_frame
+            # Save the mega file
+            self.audio_action.save_mega(audio=self.mega_audio, file_name=file_name, extension=extension, frame=frame_sum)
+
+
 
 ##############################################################
 #   Function Prototype
@@ -312,6 +334,15 @@ def short_test():
     # Add Equalizer and play the audio file
     # NOTICE: Only ONE equalizer can be applied
     lib.audio_action.equalizer(equalizer_type="vocal", use_original=False, save=True, play=True, file_name="vocal_equalized.wav")
+
+
+def mega_file():
+    print("Generating a mega file")
+    # Load library from file and playlist does not contain repeat item
+    lib = Library(length=8, file_name="raw_track_short.csv", repeat=False)
+    playlist = np.asarray(["clip1.wav", "clip2.wav", "clip3.wav"])
+    equalizer_type = np.asarray(["vocal", "acoustic", "piano"])
+    lib.demo_playlist_to_audio(playlist=playlist, equalizer_type=equalizer_type, file_name="mega", extension="mp3")
 
 
 # IMPORTANT
@@ -387,6 +418,7 @@ def main():
     print("Hello World!")
     # test_api()
     short_test()
+    # mega_file()
 
 
 ##############################################################
